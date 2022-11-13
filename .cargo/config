@@ -1,0 +1,15 @@
+[target.aarch64-linux-android]
+ar = "D:/Development/project/NDK/arm64/bin/aarch64-linux-android-ar.cmd"
+linker = "D:/Development/project/NDK/arm64/bin/aarch64-linux-android-clang.cmd"
+
+[target.armv7-linux-androideabi]
+ar = "D:/Development/project/NDK/arm/bin/arm-linux-androideabi-ar.cmd"
+linker = "D:/Development/project/NDK/arm/bin/arm-linux-androideabi-clang.cmd"
+
+[target.x86_64-linux-android]
+ar = "D:/Development/project/NDK/x86_64/bin/x86_64-linux-android-ar.cmd"
+linker = "D:/Development/project/NDK/x86_64/bin/x86_64-linux-android-clang.cmd"
+
+[target.i686-linux-android]
+ar = "D:/Development/project/NDK/x86/bin/i686-linux-android-ar.cmd"
+linker = "D:/Development/project/NDK/x86/bin/i686-linux-android-clang.cmd"
