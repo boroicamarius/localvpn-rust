@@ -25,15 +25,19 @@ impl Kernel {
         }
     }
     pub fn stop_instance(&mut self) {
+        log::trace!("stopping KERNEL instance");
         if *self.running.lock().unwrap() == false {
+            log::trace!("RUNNING is false");
             return;
         }
+        log::trace!("Can stop something");
         *self.terminate.lock().unwrap() = true;
-        if let Some(thread) = self.thread.lock().unwrap().take() {
-            match thread.join() {
+        match self.thread.lock().unwrap().take() {
+            Some(thread) => match thread.join() {
                 Ok(_) => log::trace!("thread returned with SUCCESS"),
                 Err(_) => log::trace!("thread FAILED to return"),
-            }
+            },
+            None => log::trace!("No thread to WAIT"),
         }
     }
     pub fn start_instance(&mut self, fd: i32) -> Result<(), &'static str> {
@@ -43,7 +47,9 @@ impl Kernel {
         if *self.running.lock().unwrap() {
             self.stop_instance();
         }
+        *self.terminate.lock().unwrap() = false;
         let terminate_copy = Arc::clone(&self.terminate);
+        *self.running.lock().unwrap() = true;
         *self.thread.lock().unwrap() = Some(thread::spawn(move || {
             KernelLoop::new().run(fd, terminate_copy)
         }));

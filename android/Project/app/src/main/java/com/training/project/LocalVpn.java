@@ -37,7 +37,10 @@ public class LocalVpn extends VpnService {
         setupVpn();
         start_vpn(vpnInterface.detachFd());
     }
-    public void stop(){}
+    public void stop(){
+        Log.d(TAG,"Stopping vpn interface");
+        stop_vpn();
+    }
 
     private native void create_native(VpnService vpnInstance);
     private native void destroy_native();
