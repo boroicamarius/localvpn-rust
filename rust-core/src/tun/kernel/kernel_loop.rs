@@ -6,6 +6,11 @@ use std::{
     io::{self, Read, Write},
     os::unix::io::FromRawFd,
 };
+#[path = "../packet_system/mod.rs"]
+mod packet_system;
+
+use packet_system::ip_packet::IpPacket;
+
 pub struct KernelLoop;
 
 impl KernelLoop {
@@ -45,13 +50,16 @@ impl KernelLoop {
 
                     match tun_fd.read(&mut buffer) {
                         Ok(count) => {
-                            log::trace!("{}:{}", count, buffer[0].checked_shr(4).unwrap())
+                            let version = buffer[0].checked_shr(4).unwrap();
+                            if version == 4 {}
+                            // else{
+
+                            // }
                         }
                         Err(error) => {
                             log::trace!("Error at KLOOP: {}", error)
                         }
                     }
-
                     log::trace!("TOKEN writeable");
                 }
             }
