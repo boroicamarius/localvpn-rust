@@ -8,8 +8,11 @@ use std::{
 };
 #[path = "../packet_system/mod.rs"]
 mod packet_system;
-
-use packet_system::ip_packet::IpPacket;
+use packet_system::{
+    ip_packet::{IpPacket, PacketType, PacketVersion},
+    ipv4packet::Ipv4Packet,
+    ipv6packet::Ipv6Packet,
+};
 
 pub struct KernelLoop;
 
@@ -51,7 +54,19 @@ impl KernelLoop {
                     match tun_fd.read(&mut buffer) {
                         Ok(count) => {
                             let version = buffer[0].checked_shr(4).unwrap();
-                            if version == 4 {}
+                            if version == 4 {
+                                let packet: Ipv4Packet =
+                                    Ipv4Packet::new_raw(buffer.to_vec()).unwrap();
+                                log::trace!(
+                                    "PACKET {}:{}\nLEN {}\nPROTOCOL {}\nSOURCE IP {}.{}.{}.{}\nDEST IP {}.{}.{}.{}",
+                                    packet.version,
+                                    packet.ihl,
+                                    packet.total_length,
+                                    packet.protocol,
+                                    packet.source_ip[0],packet.source_ip[1],packet.source_ip[2],packet.source_ip[3], 
+                                    packet.dest_ip[0],packet.dest_ip[1],packet.dest_ip[2],packet.dest_ip[3], 
+                                );
+                            }
                             // else{
 
                             // }
