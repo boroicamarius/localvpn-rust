@@ -13,6 +13,7 @@ use packet_system::{
     ipv4packet::Ipv4Packet,
     ipv6packet::Ipv6Packet,
     udppacket::UdpPacket,
+    tcppacket::TcpPacket,
 };
 
 pub struct KernelLoop;
@@ -59,7 +60,7 @@ impl KernelLoop {
                                 let packet: Ipv4Packet =
                                     Ipv4Packet::new_raw(buffer.to_vec());
                                 log::trace!(
-                                    "PACKET:$\nVERSION IPV4\nLEN {}\nPROTOCOL {}\nSOURCE IP {}.{}.{}.{}\nDEST IP {}.{}.{}.{}",
+                                    "PACKET:4\nVERSION IPV4\nLEN {}\nPROTOCOL {}\nSOURCE IP {}.{}.{}.{}\nDEST IP {}.{}.{}.{}",
                                     packet.total_length,
                                     packet.protocol,
                                     packet.source_ip[0],packet.source_ip[1],packet.source_ip[2],packet.source_ip[3], 
@@ -68,7 +69,18 @@ impl KernelLoop {
                                 
                                 match packet.protocol{
                                     6 => {
-                                        log::trace!("PACKET PAYLOAD: 6 (TCP)")
+                                        let tcp_packet = TcpPacket::new_raw(packet.payload);
+                                        log::trace!("PACKET PAYLOAD: 6 (TCP)\nSOURCE PORT {}\nDEST PORT {}\nSEQ NUM {}\nACK NUM {}\nACK:{},RST:{},SYN:{},FIN:{}\nWINDOW SIZE {}",
+                                            tcp_packet.source_port,
+                                            tcp_packet.dest_port,
+                                            tcp_packet.seq_num,
+                                            tcp_packet.ack_num,
+                                            tcp_packet.ack,
+                                            tcp_packet.rst,
+                                            tcp_packet.syn,
+                                            tcp_packet.fin,
+                                            tcp_packet.window_size
+                                        )
                                     }
                                     17 => {
                                         let udp_packet = UdpPacket::new_raw(packet.payload);

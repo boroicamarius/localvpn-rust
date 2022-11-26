@@ -21,7 +21,9 @@ impl UdpPacket {
         udp_packet.source_port = ((data[0] as u16).checked_shl(8).unwrap()) + (data[1] as u16);
         udp_packet.dest_port = ((data[2] as u16).checked_shl(8).unwrap()) + (data[3] as u16);
         udp_packet.length = ((data[4] as u16).checked_shl(8).unwrap()) + (data[5] as u16);
-        udp_packet.payload = data.drain((8 as usize)..(data.len() as usize)).collect();
+        udp_packet.payload = data
+            .drain((8 as usize)..((udp_packet.length) as usize))
+            .collect();
         udp_packet.uninitialized = false;
         udp_packet
     }
