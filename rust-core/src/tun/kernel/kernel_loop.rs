@@ -12,6 +12,7 @@ use packet_system::{
     ip_packet::{IpPacket, PacketType, PacketVersion},
     ipv4packet::Ipv4Packet,
     ipv6packet::Ipv6Packet,
+    udppacket::UdpPacket,
 };
 
 pub struct KernelLoop;
@@ -56,16 +57,32 @@ impl KernelLoop {
                             let version = buffer[0].checked_shr(4).unwrap();
                             if version == 4 {
                                 let packet: Ipv4Packet =
-                                    Ipv4Packet::new_raw(buffer.to_vec()).unwrap();
+                                    Ipv4Packet::new_raw(buffer.to_vec());
                                 log::trace!(
-                                    "PACKET {}:{}\nLEN {}\nPROTOCOL {}\nSOURCE IP {}.{}.{}.{}\nDEST IP {}.{}.{}.{}",
-                                    packet.version,
-                                    packet.ihl,
+                                    "PACKET:$\nVERSION IPV4\nLEN {}\nPROTOCOL {}\nSOURCE IP {}.{}.{}.{}\nDEST IP {}.{}.{}.{}",
                                     packet.total_length,
                                     packet.protocol,
                                     packet.source_ip[0],packet.source_ip[1],packet.source_ip[2],packet.source_ip[3], 
                                     packet.dest_ip[0],packet.dest_ip[1],packet.dest_ip[2],packet.dest_ip[3], 
                                 );
+                                
+                                match packet.protocol{
+                                    6 => {
+                                        log::trace!("PACKET PAYLOAD: 6 (TCP)")
+                                    }
+                                    17 => {
+                                        let udp_packet = UdpPacket::new_raw(packet.payload);
+                                        log::trace!("PACKET PAYLOAD 17 (UDP)\nSOURCE PORT {}\nDEST PORT {}\nLENGTH {}\nPAYLOAD {}:{:?}",
+                                            udp_packet.source_port,
+                                            udp_packet.dest_port,
+                                            udp_packet.length,
+                                            udp_packet.payload.len(),
+                                            String::from_utf8_lossy(&udp_packet.payload),
+                                        )
+                                    }
+                                    _ => {log::trace!("PACKET PAYLOAD: not supported")}
+                                }
+                                
                             }
                             // else{
 

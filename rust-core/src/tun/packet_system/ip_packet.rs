@@ -28,13 +28,7 @@ impl IpPacket {
     pub fn create(version: PacketVersion, data: Vec<u8>) -> Self {
         match version {
             PacketVersion::Ipv4 => Self {
-                packet: PacketType::Ipv4(match Ipv4Packet::new_raw(data) {
-                    Ok(pkt) => pkt,
-                    Err(e) => {
-                        log::trace!("PACKET ERR: {}", e);
-                        Ipv4Packet::default()
-                    }
-                }),
+                packet: PacketType::Ipv4(Ipv4Packet::new_raw(data)),
             },
             PacketVersion::Ipv6 => Self {
                 // packet: PacketType::Ipv6(Ipv6Packet::new(data)),
